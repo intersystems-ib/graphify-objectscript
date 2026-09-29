@@ -132,23 +132,26 @@ the `.pth` hook did not run but a console script still can.
   ObjectScript support natively, `register()` notices (`.mac` is already in
   `_DISPATCH`) and does nothing further -- this package quietly becomes a
   no-op rather than fighting the native implementation.
-- **The Pascal-resolver guard and the bare-name-call skip are fork-only.**
-  The fork this extractor comes from also patches
-  `graphify.pascal_resolution._pascal_raw_calls` to ignore raw calls tagged
-  `language="objectscript"`, so a `.inc` file that happens to also get
-  swept up by the shared Pascal unit-name resolver never gets a spurious
-  Pascal edge. Stock `graphifyy` has no such shared-suffix bare-name pass
-  for `.cls`/`.inc` today, so this genuinely does not come up on stock --
-  it is called out here only so it is not mistaken for a bug if it is ever
-  reintroduced upstream in a later `graphifyy` release.
+- **The Pascal-resolver guard is fork-only.** The fork this extractor comes
+  from also patches `graphify.pascal_resolution._pascal_raw_calls` to ignore
+  raw calls tagged `language="objectscript"`, so a `.inc` file that happens
+  to also get swept up by the shared Pascal unit-name resolver never gets a
+  spurious Pascal edge. On stock `graphifyy` an ObjectScript raw call is
+  never a Pascal call owner, so this does not come up in practice -- it is
+  called out here only so it is not mistaken for a bug.
+- **The qualified-call gate is emulated.** The fork's `extract.py` skips raw
+  calls tagged `is_qualified_call` in its shared bare-name resolution pass
+  (every ObjectScript call names its own target scope: `##class(X).M()`,
+  `$$Label^Routine`, `$$$MACRO`). Stock `graphifyy` has no such gate, so
+  `extract_objectscript_stock` re-applies the flag it does honour,
+  `is_member_call: True`, to every qualified call before the pass sees it.
+  Either way only this package's own `objectscript_calls` resolver turns
+  these calls into graph edges, with that qualified evidence.
 - **No language-family table entries.** Unlike the fork, this package does
   not (and safely cannot) add `.cls`/`.inc`/`.mac`/`.rtn` to graphify's
   suffix-keyed language-family tables (used by `build`/`analyze`, not by
-  `extract`) -- every ObjectScript raw call the extractor emits is already
-  tagged `is_member_call: True`, so the shared bare-name resolution pass
-  skips it regardless; only this package's own `objectscript_calls`
-  resolver (qualified evidence: an explicit `##class(X).M()`,
-  `Do Label^Routine`, ...) ever turns it into a graph edge.
+  `extract`); the qualified-call gate above is what keeps cross-language
+  bare-name matches out.
 - **`.int` (compiled output) is intentionally never dispatched**, on stock
   or on the fork -- it duplicates every `.mac`/`.cls` symbol and would only
   produce double-counted nodes.
