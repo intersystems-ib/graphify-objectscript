@@ -21,8 +21,8 @@ def test_register_patches_stock_dispatch_and_code_extensions():
     import graphify.detect as detect
     import graphify.extract as extract
 
-    assert extract._DISPATCH[".mac"] is ext.extract_objectscript
-    assert extract._DISPATCH[".rtn"] is ext.extract_objectscript
+    assert extract._DISPATCH[".mac"] is go.extract_objectscript_stock
+    assert extract._DISPATCH[".rtn"] is go.extract_objectscript_stock
     # The historical owners of the shared extensions are untouched: only the
     # content sniff (tested below) reroutes a specific .cls/.inc file.
     assert extract._DISPATCH[".cls"] is extract.extract_apex
@@ -77,9 +77,9 @@ def test_get_extractor_routes_objectscript_fixtures():
 
     import graphify.extract as extract
 
-    assert extract._get_extractor(OS_DIR / "Demo.Base.cls") is ext.extract_objectscript
-    assert extract._get_extractor(OS_DIR / "Demo.Service.cls") is ext.extract_objectscript
-    assert extract._get_extractor(OS_DIR / "DemoMacros.inc") is ext.extract_objectscript
+    assert extract._get_extractor(OS_DIR / "Demo.Base.cls") is go.extract_objectscript_stock
+    assert extract._get_extractor(OS_DIR / "Demo.Service.cls") is go.extract_objectscript_stock
+    assert extract._get_extractor(OS_DIR / "DemoMacros.inc") is go.extract_objectscript_stock
 
 
 def test_get_extractor_keeps_apex_and_pascal(tmp_path):

@@ -121,3 +121,35 @@ def test_apex_and_pascal_unaffected(tmp_path):
 
     result = extract.extract([FIXTURES / "sample.cls"], cache_root=tmp_path)
     assert any(n["label"] == "AccountService" for n in result["nodes"])
+
+
+def test_qualified_calls_never_bind_by_bare_name_on_stock_graphify(tmp_path):
+    # Stock graphify has no `is_qualified_call` gate in its shared bare-name
+    # pass; the shim re-applies `is_member_call=True` so `$$Calc^Missing(1)`
+    # and `##class(Gone.Cls).Helper()` never bind to a Python `Calc()` /
+    # `Helper()` that happens to share the corpus.
+    import graphify_objectscript as go
+    from graphify.extract import extract
+
+    go.register()  # idempotent; may already be registered by the .pth hook
+    (tmp_path / "util.py").write_text(
+        "def Calc():\n    return 1\n\n\ndef Helper():\n    return 2\n", encoding="utf-8"
+    )
+    (tmp_path / "r.mac").write_text(
+        "ROUTINE r\nMain\n Set x = $$Calc^Missing(1)\n Do ##class(Gone.Cls).Helper()\n Quit\n",
+        encoding="utf-8",
+    )
+    result = extract(
+        [tmp_path / "util.py", tmp_path / "r.mac"], cache_root=tmp_path / "cache", root=tmp_path
+    )
+    labels = {n["id"]: n["label"] for n in result["nodes"]}
+    calls = {
+        (labels.get(e["source"]), labels.get(e["target"]))
+        for e in result["edges"]
+        if e["relation"] == "calls"
+    }
+    assert ("Main()", "Calc()") not in calls
+    assert ("Main()", "Helper()") not in calls
+    for rc in result.get("raw_calls", []):
+        if rc.get("language") == "objectscript":
+            assert rc["is_member_call"] is True

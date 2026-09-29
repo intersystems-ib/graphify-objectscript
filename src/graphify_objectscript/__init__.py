@@ -174,6 +174,24 @@ def _register_resolver(extract_module, extractor_module) -> None:
         _debug(f"register_language_resolver() failed: {exc!r}")
 
 
+def extract_objectscript_stock(path):
+    """The fork's extractor, adapted for stock graphify.
+
+    Every ObjectScript raw call is a *qualified* call (``##class(X).M()``,
+    ``$$L^R``, ``$$$MACRO``): the fork's ``extract.py`` skips such calls in
+    its shared bare-name pass via ``is_qualified_call`` and leaves them to
+    ``resolve_objectscript_calls``. Stock graphify has no such gate, so the
+    only way to keep its bare-name pass from binding ``Calc`` to any
+    ``Calc()`` in the corpus is the flag it *does* honour: ``is_member_call``.
+    Module-level (not a closure) so it stays importable in spawned workers.
+    """
+    result = _load_extractor().extract_objectscript(path)
+    for rc in result.get("raw_calls", ()):
+        if rc.get("is_qualified_call"):
+            rc["is_member_call"] = True
+    return result
+
+
 def _wrap_get_extractor(extract_module, extractor_module) -> None:
     """Replace ``_get_extractor`` with a version that also content-routes
     ``.cls``/``.inc`` to the ObjectScript extractor.
@@ -195,9 +213,9 @@ def _wrap_get_extractor(extract_module, extractor_module) -> None:
         result = original(path)
         suffix = path.suffix.lower()
         if suffix == ".cls" and extractor_module._is_objectscript_class(path):
-            return extractor_module.extract_objectscript
+            return extract_objectscript_stock
         if suffix == ".inc" and extractor_module._is_objectscript_include(path):
-            return extractor_module.extract_objectscript
+            return extract_objectscript_stock
         return result
 
     _get_extractor._graphify_objectscript_wrapped = True
@@ -268,8 +286,8 @@ def _register(extract_module, detect_module) -> bool:
         )
         return False
 
-    dispatch[".mac"] = extractor_module.extract_objectscript
-    dispatch[".rtn"] = extractor_module.extract_objectscript
+    dispatch[".mac"] = extract_objectscript_stock
+    dispatch[".rtn"] = extract_objectscript_stock
 
     _wrap_get_extractor(extract_module, extractor_module)
 
