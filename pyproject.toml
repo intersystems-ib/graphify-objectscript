@@ -19,15 +19,22 @@ keywords = [
     "knowledge-graph",
 ]
 authors = [
-    { name = "graphify-objectscript contributors" },
+    { name = "InterSystems Iberia" },
 ]
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Plugins",
+    "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
     "graphifyy>=0.9.71,<0.10",
@@ -36,8 +43,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/intersystems-ib/graphify"
-Repository = "https://github.com/intersystems-ib/graphify"
+Homepage = "https://github.com/intersystems-ib/graphify-objectscript"
+Repository = "https://github.com/intersystems-ib/graphify-objectscript"
+Issues = "https://github.com/intersystems-ib/graphify-objectscript/issues"
+"Upstream PR" = "https://github.com/Graphify-Labs/graphify/pull/3921"
+"graphify" = "https://github.com/Graphify-Labs/graphify"
 
 [project.scripts]
 graphify-objectscript = "graphify_objectscript.cli:main"

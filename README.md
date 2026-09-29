@@ -1,9 +1,19 @@
 # graphify-objectscript
 
+[![PyPI](https://img.shields.io/pypi/v/graphify-objectscript.svg)](https://pypi.org/project/graphify-objectscript/)
+[![CI](https://github.com/intersystems-ib/graphify-objectscript/actions/workflows/ci.yml/badge.svg)](https://github.com/intersystems-ib/graphify-objectscript/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 InterSystems ObjectScript (`.cls`/`.mac`/`.inc`/`.rtn`) support for
 [graphify](https://github.com/Graphify-Labs/graphify) (PyPI: `graphifyy`),
 for customers running the current release rather than a fork -- until this
 ships natively upstream.
+
+> **A bridge, not a fork.** The extractor in this package is the same code
+> proposed upstream in [Graphify-Labs/graphify#3921](https://github.com/Graphify-Labs/graphify/pull/3921).
+> Once graphify releases native support (`uv tool install "graphifyy[objectscript]"`),
+> this package detects it and becomes a no-op; a final release will then
+> mark it deprecated. Supported range today: `graphifyy>=0.9.71,<0.10`.
 
 Without this package, stock `graphifyy`:
 
