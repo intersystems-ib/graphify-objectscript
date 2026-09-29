@@ -1,0 +1,34 @@
+# Build artifacts
+dist/
+build/
+*.egg-info/
+*.egg
+wheels/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+
+# Virtual environments
+.venv/
+.venv-*/
+venv/
+env/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# graphify's own output, if run inside this checkout
+graphify-out/
+
+# Scratch output from manual `sidegraph` runs
+sidegraph.json

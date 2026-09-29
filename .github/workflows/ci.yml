@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: "py${{ matrix.python-version }} / graphifyy ${{ matrix.graphifyy }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+        graphifyy: ["0.9.71", "latest"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install this package
+        run: python -m pip install --upgrade pip && python -m pip install .
+
+      - name: Pin graphifyy==0.9.71 (floor of the supported range)
+        if: matrix.graphifyy == '0.9.71'
+        run: python -m pip install "graphifyy==0.9.71"
+
+      - name: Upgrade graphifyy to latest
+        if: matrix.graphifyy == 'latest'
+        run: python -m pip install --upgrade graphifyy
+
+      - name: Install test dependencies
+        run: python -m pip install pytest
+
+      - name: Show installed graphifyy version
+        run: python -c "from importlib.metadata import version; print('graphifyy', version('graphifyy'))"
+
+      - name: Verify the .pth hook activates without importing graphify_objectscript
+        run: python -c "import graphify.extract as e; assert '.mac' in e._DISPATCH, 'ObjectScript not registered'; print('OK: .mac in _DISPATCH')"
+
+      - name: Run tests
+        run: python -m pytest tests -q

@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "graphify-objectscript"
+version = "0.1.0"
+description = "InterSystems ObjectScript (.cls/.mac/.inc/.rtn) support for graphify (graphifyy) on PyPI, until native support ships upstream"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+keywords = [
+    "graphify",
+    "objectscript",
+    "intersystems",
+    "iris",
+    "tree-sitter",
+    "knowledge-graph",
+]
+authors = [
+    { name = "graphify-objectscript contributors" },
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "graphifyy>=0.9.71,<0.10",
+    "tree-sitter-objectscript>=1.9.22",
+    "tree-sitter>=0.25,<0.26",
+]
+
+[project.urls]
+Homepage = "https://github.com/intersystems-ib/graphify"
+Repository = "https://github.com/intersystems-ib/graphify"
+
+[project.scripts]
+graphify-objectscript = "graphify_objectscript.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/graphify_objectscript"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"hooks/graphify_objectscript.pth" = "graphify_objectscript.pth"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/hooks",
+    "/scripts",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
