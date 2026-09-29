@@ -41,7 +41,8 @@ jobs:
         run: python -c "from importlib.metadata import version; print('graphifyy', version('graphifyy'))"
 
       - name: Verify the .pth hook activates without importing graphify_objectscript
-        run: python -c "import graphify.extract as e; assert '.mac' in e._DISPATCH, 'ObjectScript not registered'; print('OK: .mac in _DISPATCH')"
+        run: |
+          python -c "import graphify.extract as e; assert '.mac' in e._DISPATCH, 'ObjectScript not registered'; print('OK: .mac in _DISPATCH')"
 
       - name: Run tests
         run: python -m pytest tests -q
