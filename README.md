@@ -57,6 +57,26 @@ should print `True`. This intentionally never imports `graphify_objectscript`
 itself -- that is the whole point: installing this package alongside
 `graphifyy` is enough, because of the import hook described below.
 
+### Alternative: install graphify from the fork instead
+
+If you would rather run the graphify build that carries the extractor natively
+(the exact code proposed upstream in
+[Graphify-Labs/graphify#3921](https://github.com/Graphify-Labs/graphify/pull/3921)),
+install the `intersystems-ib/graphify` fork's branch with the `objectscript`
+extra; no plug-in is needed then:
+
+```bash
+uv tool install "graphifyy[objectscript] @ git+https://github.com/intersystems-ib/graphify@feat/objectscript-extractor"
+```
+
+Trade-offs versus this package: it needs `git` on the machine and a corporate
+PyPI proxy will not serve it; it pins you to a fork branch that is rebased on
+upstream releases rather than tracking them; and `uv tool upgrade` does not
+apply. It is the right choice for evaluating exactly what the upstream PR
+does, or when the `.pth` hook is unwelcome in your environment. Once upstream
+ships native support, `uv tool install "graphifyy[objectscript]"` replaces
+both routes.
+
 ## How it works
 
 Installing this package drops one `.pth` file at the site-packages root
